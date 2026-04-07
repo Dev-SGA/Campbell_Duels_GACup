@@ -44,7 +44,7 @@ matches_data = {
         ("DUEL DEFENSIVO LOST", 1.82, 69.26, "videos/2 - AT.mp4"), 
         ("DUEL DEFENSIVO LOST", 27.25, 69.59, "videos/4 - AT.mp4"), 
         ("DUEL DEFENSIVO LOST", 36.89, 71.58, "videos/5 - AT.mp4"),  
-        ("INTERCEPTACAO", 2.48, 72.42, "videos/INT 3 - AT.mp4"),
+        ("BLOQUEIO", 2.48, 72.42, "videos/INT 3 - AT.mp4"),
         ("CLEARENCE", 28.75, 48.48, "videos/INT 1 - AT.mp4"),
         ("DUEL DEFENSIVO WON", 15.95, 40.50, "videos/INT 2 - AT.mp4"),
     ],
