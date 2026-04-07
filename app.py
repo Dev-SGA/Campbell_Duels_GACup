@@ -11,9 +11,9 @@ from matplotlib.lines import Line2D
 # ==========================
 # Page Configuration
 # ==========================
-st.set_page_config(layout="wide", page_title="Defensive Duel & Interception Map")
+st.set_page_config(layout="wide", page_title="Defensive Actions Map")
 
-st.title("Defensive Duel & Interception Map - Multiple Matches")
+st.title("Defensive Actions Interception Map - Multiple Matches")
 st.caption("Click on the icons on the pitch to view event details.")
 
 # ==========================
