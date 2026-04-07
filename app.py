@@ -21,32 +21,32 @@ st.caption("Click on the icons on the pitch to view event details.")
 # ==========================
 matches_data = {
     "Vs Dallas": [
-        ("DUEL DEFENSIVO WON", 3.15, 69.59, "videos/1 - DL.mp4"),
-        ("DUEL DEFENSIVO WON", 8.80, 63.77, "videos/5 - DL.mp4"),
-        ("DUEL DEFENSIVO WON", 21.60, 49.64, "videos/3 - DL.mp4"),
-        ("DUEL DEFENSIVO WON", 20.27, 53.30, "videos/2 - DL.mp4"),
-        ("DUEL DEFENSIVO WON", 31.08, 54.79, "videos/4 - DL.mp4"),
-        ("INTERCEPTACAO", 79.12, 16.89, "videos/INT 2 - DL.mp4"),
-        ("INTERCEPTACAO", 71.14, 69.26, "videos/INT 1 - DL.mp4"),
+        ("DEFENSIVE DUEL WON", 3.15, 69.59, "videos/1 - DL.mp4"),
+        ("DEFENSIVE DUEL WON", 8.80, 63.77, "videos/5 - DL.mp4"),
+        ("DEFENSIVE DUEL WON", 21.60, 49.64, "videos/3 - DL.mp4"),
+        ("DEFENSIVE DUEL WON", 20.27, 53.30, "videos/2 - DL.mp4"),
+        ("DEFENSIVE DUEL WON", 31.08, 54.79, "videos/4 - DL.mp4"),
+        ("INTERCEPTION", 79.12, 16.89, "videos/INT 2 - DL.mp4"),
+        ("INTERCEPTION", 71.14, 69.26, "videos/INT 1 - DL.mp4"),
     ],
     "Vs Nagoya": [
-        ("DUEL DEFENSIVO WON", 7.47, 66.43, "videos/1 - NG.mp4"),
-        ("INTERCEPTACAO", 37.39, 69.09, "videos/INT 1 - NG.mp4"),
+        ("DEFENSIVE DUEL WON", 7.47, 66.43, "videos/1 - NG.mp4"),
+        ("INTERCEPTION", 37.39, 69.09, "videos/INT 1 - NG.mp4"),
     ],
     "Vs Busan Park": [
-        ("DUEL DEFENSIVO WON", 14.78, 42.66, "videos/INT 1 - BP.mp4"),
+        ("DEFENSIVE DUEL WON", 14.78, 42.66, "videos/INT 1 - BP.mp4"),
     ],
     "Vs Atlanta": [
-        ("DUEL DEFENSIVO WON", 8.30, 60.45, "videos/7 - AT.mp4"),
-        ("DUEL DEFENSIVO WON", 9.13, 75.24, "videos/6 - AT.mp4"),
-        ("DUEL DEFENSIVO WON", 19.27, 71.42, "videos/1 - AT.mp4"), 
-        ("DUEL DEFENSIVO WON", 21.93, 48.81, "videos/3 - AT.mp4"), 
-        ("DUEL DEFENSIVO LOST", 1.82, 69.26, "videos/2 - AT.mp4"), 
-        ("DUEL DEFENSIVO LOST", 27.25, 69.59, "videos/4 - AT.mp4"), 
-        ("DUEL DEFENSIVO LOST", 36.89, 71.58, "videos/5 - AT.mp4"),  
-        ("BLOQUEIO", 2.48, 72.42, "videos/INT 3 - AT.mp4"),
-        ("CLEARENCE", 28.75, 48.48, "videos/INT 1 - AT.mp4"),
-        ("DUEL DEFENSIVO WON", 15.95, 40.50, "videos/INT 2 - AT.mp4"),
+        ("DEFENSIVE DUEL WON", 8.30, 60.45, "videos/7 - AT.mp4"),
+        ("DEFENSIVE DUEL WON", 9.13, 75.24, "videos/6 - AT.mp4"),
+        ("DEFENSIVE DUEL WON", 19.27, 71.42, "videos/1 - AT.mp4"),
+        ("DEFENSIVE DUEL WON", 21.93, 48.81, "videos/3 - AT.mp4"),
+        ("DEFENSIVE DUEL LOST", 1.82, 69.26, "videos/2 - AT.mp4"),
+        ("DEFENSIVE DUEL LOST", 27.25, 69.59, "videos/4 - AT.mp4"),
+        ("DEFENSIVE DUEL LOST", 36.89, 71.58, "videos/5 - AT.mp4"),
+        ("BLOCK", 2.48, 72.42, "videos/INT 3 - AT.mp4"),
+        ("CLEARANCE", 28.75, 48.48, "videos/INT 1 - AT.mp4"),
+        ("DEFENSIVE DUEL WON", 15.95, 40.50, "videos/INT 2 - AT.mp4"),
     ],
 }
 
@@ -65,26 +65,34 @@ def get_style(event_type, has_video):
     """Returns marker, color (rgba), size, and linewidth based on event type"""
     event_type = event_type.upper()
 
-    # 1. DUELOS DEFENSIVOS (Defensive Duels)
-    if "DEFENSIVO" in event_type:
+    # 1. DEFENSIVE DUELS
+    if "DEFENSIVE DUEL" in event_type:
         if "WON" in event_type:
             return 's', (0.0, 0.75, 0.2, 0.95), 130, 0.5
         if "LOST" in event_type:
             alpha = 0.95 if has_video else 0.85
             return 'D', (0.85, 0.1, 0.1, alpha), 130, 2.5
 
-    # 2. INTERCEPTAÇÕES - Bolinha azul
-    if "INTERCEPT" in event_type or "INTERCEPTACAO" in event_type:
+    # 2. INTERCEPTION - Blue circle
+    if "INTERCEPTION" in event_type:
         return 'o', (0.2, 0.6, 0.95, 0.95), 130, 0.5
+
+    # 3. BLOCK - Purple pentagon
+    if "BLOCK" in event_type:
+        return 'P', (0.7, 0.3, 0.9, 0.95), 130, 0.5
+
+    # 4. CLEARANCE - Orange triangle
+    if "CLEARANCE" in event_type:
+        return '^', (1.0, 0.65, 0.0, 0.95), 130, 0.5
 
     # Default
     return 'o', (0.5, 0.5, 0.5, 0.8), 90, 0.5
 
 
 def compute_stats(df: pd.DataFrame) -> dict:
-    """Compute defensive duel and interception statistics"""
+    """Compute defensive duel, interception, block and clearance statistics"""
     # Defensive duels
-    is_def_duel = df['type'].str.contains('DEFENSIVO', case=False)
+    is_def_duel = df['type'].str.contains('DEFENSIVE DUEL', case=False)
     def_duels = df[is_def_duel]
     def_total = len(def_duels)
     def_wins = len(def_duels[def_duels['type'].str.contains('WON', case=False)])
@@ -92,8 +100,13 @@ def compute_stats(df: pd.DataFrame) -> dict:
     def_rate = (def_wins / def_total * 100) if def_total > 0 else 0
 
     # Interceptions
-    is_intercept = df['type'].str.contains('INTERCEPT|INTERCEPTACAO', case=False)
-    intercepts = len(df[is_intercept])
+    intercepts = len(df[df['type'].str.contains('INTERCEPTION', case=False)])
+
+    # Blocks
+    blocks = len(df[df['type'].str.contains('BLOCK', case=False)])
+
+    # Clearances
+    clearances = len(df[df['type'].str.contains('CLEARANCE', case=False)])
 
     return {
         "def_total": def_total,
@@ -101,6 +114,8 @@ def compute_stats(df: pd.DataFrame) -> dict:
         "def_losses": def_losses,
         "def_rate": def_rate,
         "intercepts": intercepts,
+        "blocks": blocks,
+        "clearances": clearances,
     }
 
 
@@ -114,8 +129,8 @@ st.sidebar.divider()
 
 filter_event_type = st.sidebar.multiselect(
     "Event Type",
-    ["Defensive Duels", "Interceptions"],
-    default=["Defensive Duels", "Interceptions"]
+    ["Defensive Duels", "Interceptions", "Blocks", "Clearances"],
+    default=["Defensive Duels", "Interceptions", "Blocks", "Clearances"]
 )
 
 st.sidebar.divider()
@@ -125,12 +140,17 @@ st.sidebar.caption("Match filtered by selected options above")
 df = full_data[selected_match].copy()
 
 # Apply event type filter
-if not all(x in filter_event_type for x in ["Defensive Duels", "Interceptions"]):
+all_types = ["Defensive Duels", "Interceptions", "Blocks", "Clearances"]
+if not all(x in filter_event_type for x in all_types):
     mask = pd.Series([False] * len(df))
     if "Defensive Duels" in filter_event_type:
-        mask |= df['type'].str.contains('DEFENSIVO', case=False)
+        mask |= df['type'].str.contains('DEFENSIVE DUEL', case=False)
     if "Interceptions" in filter_event_type:
-        mask |= df['type'].str.contains('INTERCEPT|INTERCEPTACAO', case=False)
+        mask |= df['type'].str.contains('INTERCEPTION', case=False)
+    if "Blocks" in filter_event_type:
+        mask |= df['type'].str.contains('BLOCK', case=False)
+    if "Clearances" in filter_event_type:
+        mask |= df['type'].str.contains('CLEARANCE', case=False)
     df = df[mask]
 
 # Compute stats always from full match data
@@ -169,6 +189,12 @@ with col_map:
 
         Line2D([0], [0], marker='o', color='w', label='Interception',
                markerfacecolor=(0.2, 0.6, 0.95, 0.95), markersize=10, linestyle='None'),
+
+        Line2D([0], [0], marker='P', color='w', label='Block',
+               markerfacecolor=(0.7, 0.3, 0.9, 0.95), markersize=10, linestyle='None'),
+
+        Line2D([0], [0], marker='^', color='w', label='Clearance',
+               markerfacecolor=(1.0, 0.65, 0.0, 0.95), markersize=10, linestyle='None'),
     ]
 
     legend = ax.legend(
@@ -249,13 +275,12 @@ with col_vid:
     st.divider()
     st.subheader("Performance Statistics")
 
-    col1, col2 = st.columns(2)
+    col1, col2, col3, col4 = st.columns(4)
     col1.metric(
         "Defensive Duels",
         f"{stats['def_wins']}/{stats['def_total']}",
         f"{stats['def_rate']:.1f}% Won"
     )
-    col2.metric(
-        "Interceptions",
-        stats['intercepts']
-    )
+    col2.metric("Interceptions", stats['intercepts'])
+    col3.metric("Blocks", stats['blocks'])
+    col4.metric("Clearances", stats['clearances'])
